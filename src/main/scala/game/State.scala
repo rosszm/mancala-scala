@@ -27,7 +27,7 @@ class State(nPots: Int, nPebbles: Int) {
     * @param s the state
     * @return the copy
     */
-  protected def this(s: State) {
+  protected def this(s: State) = {
     this(s.numPots, s.numPebbles)
     pots = s.pots
     store = s.store
@@ -89,7 +89,7 @@ class State(nPots: Int, nPebbles: Int) {
     *
     * @param pot the pot
     */
-  protected def sow(pot: (Int, Int)) {
+  protected def sow(pot: (Int, Int)) = {
     if (pot._2 == -1) // sow store
       store = store.updated(pot._1, store(pot._1) + 1)
     else // sow pot

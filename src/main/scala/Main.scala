@@ -6,99 +6,84 @@ package mancala
 import mancala.game.{State, Result}
 import mancala.player.{Player, HumanPlayer, ComputerPlayer}
 import mancala.player.util.{MoveMonitor, FileLogger}
-import scala.io.Source
 
 
 /**
-  * Main application for the mancala game.
+  * The CLI implementation of the game Mancala
   */
-object Main extends App {
-  if (args.length == 0) {
-    Console.err.println(s"Missing Arguments")
+object GameCLI {
+  def main(args: Array[String]) = {
+    var players = getPlayersFromArgs(args)
+    
+    var state: State = State() // create initial game state
+    
+    while (!state.isEnd) { // EVENT LOOP: perform a move for the current player
+      println(s"$state\n")
+      state = players(state.currentPlayer).move(state)
+    }
+
+    // display end results
+    println(state)
+    val result: Result = state.results.get // get works because the game is over
+    if (result.isDraw)
+      println("Game ends: Draw")
+    else
+      println(s"Game ends: ${players(state.results.get.winner.get)} wins over " +
+        s"${players(state.results.get.loser.get)}")
+  }
+
+  /**
+    * Attempt to get the players from an array of arguments.
+    * If `args` is empty, use the default player configuration.
+    * 
+    * Post-conditions:
+    * - exit the program if an argument is invalid.
+    * 
+    * @param args an array of string arguments
+    * @return vector containing the players
+    */
+  def getPlayersFromArgs(args: Array[String]): Vector[Player] = {
+    args.length match {
+      case 0 => defaultPlayers
+      case 1 => {
+        if (args(0) == "-h") displayUsage
+        else exitOnError("must provide 0 or 2 arguments")
+      }
+      case 2 => {
+        args.zipWithIndex.map((arg, i) => {
+          if (arg == "-h") displayUsage
+          try {
+            val argInt = arg.toInt
+            if (argInt < 0 || argInt > 9) 
+              exitOnError(s"invalid difficulty, ${argInt}")
+            ComputerPlayer(arg.toInt, i)
+          }
+          catch case e: NumberFormatException => HumanPlayer(arg, i)
+        }).toVector
+      }
+      case _ => exitOnError("too many arguments")
+    }
+  }
+
+  /** The default player configuration. */ 
+  def defaultPlayers: Vector[Player] = {
+    Vector(HumanPlayer("Player", 0), ComputerPlayer(4, 1))
+  }
+
+  /**
+    * Exits prints the error message and exits the program.
+    */ 
+  def exitOnError(message: String) = {
+    Console.err.println(message)
     sys.exit(1)
   }
-  // player structures
-  var playerFiles: Vector[String] = Vector[String]()
-  var players: Vector[Player] = Vector[Player]()
-
-  // handle the program arguments and options
-  args.foreach(handleArg)
-
-  // if not quick-play, read players from their files
-  if (players.isEmpty)
-    players = playerFiles.take(2).zipWithIndex
-      .map(p => readPlayer(p._1, p._2))
-  
-  // create initial game state
-  var state: State = State()
-  
-  // EVENT LOOP: perform a move for the current player
-  while (!state.isEnd) {
-    println(s"$state\n")
-    state = players(state.currentPlayer).move(state)
-  }
-  // print game results
-  println(state)
-  val result: Result = state.results.get // get works because the game is over
-  if (result.isDraw)
-    println("Game ends: Draw")
-  else
-    println(s"Game ends: ${players(state.results.get.winner.get)} wins over " +
-      s"${players(state.results.get.loser.get)}") 
-  
-
-  /**
-    * Read a player from a file
-    *
-    * @param path the file path
-    * @param id the player id
-    * @return the Player
-    */
-  def readPlayer(path: String, id: Int): Player = {
-    val src = try {
-      Source.fromFile(path)
-    } catch {
-      case e: Exception => {
-        Console.err.println(s"Could not read player $id: $e")
-        sys.exit(1)
-      }
-    }
-    val lines = src.getLines
-    if (!lines.hasNext) {
-      Console.err.println(s"Could not read player $id: empty file")
-      sys.exit(1)
-    }
-    val args = lines.next.split(" ")
-    val player = args(0) match {
-      case "h" => HumanPlayer(args(1), id)
-      case "c" => {
-        // Create computer players with a file logger
-        new ComputerPlayer(args(1).toInt, id) with MoveMonitor with FileLogger
-      }
-      case _ => {
-        Console.err.println(s"Could not read player $id: Invalid file format")
-        sys.exit(1)
-      }
-    }
-    src.close
-    player
-  }
   
   /**
-    * Handle the command-line arguments given to the program.
-    */
-  def handleArg(arg: String) {
-    arg match {
-      case "-h" => { // print the usage message
-        println(usage) 
-        sys.exit(0)
-      }
-      case "-p" => players = Vector( // quick-play option
-        HumanPlayer("Player A", 0), 
-        HumanPlayer("Player B", 1)
-      )
-      case _ => playerFiles = playerFiles :+ arg
-    }
+    * Prints the usage instructions and exits the program.
+    */ 
+  def displayUsage = {
+    println(usage)
+    sys.exit(0)
   }
 
   /**
@@ -107,11 +92,19 @@ object Main extends App {
     * @return the usage instructions
     */
   def usage = s"""Usage:
-    |  sbt run [-h] [-p] <player A> <player B>
+    |  [-h] [-p] <player A> <player B>
     |Arguments:
-    |  <player A>    the first player file or name
-    |  <player B>    the second player file or name
+    |  <player A>    the first player name or difficulty
+    |  <player B>    the second player name or difficulty
     |Options:
     |  -h            displays the usage
-    |  -p            start a human vs human game without input files""".stripMargin
+    |Notes:
+    |  The program excepts 0 or 2 arguments:
+    |    0: starts a default human vs computer game
+    |    2: uses each arg for the players
+    |  Human players are specified by a name as a string argument
+    |  Computer players are specified by their difficulty an integer argument
+    |  Valid difficulties including integers from 0 (easiest) to 9 (hardest)
+    |Example:
+    |  mancala Bob 5""".stripMargin
 }

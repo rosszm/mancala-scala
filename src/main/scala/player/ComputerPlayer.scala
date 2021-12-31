@@ -31,7 +31,8 @@ class ComputerPlayer(d: Int, i: Int) extends Player {
     */
   def move(state: State): State = {
     state.moves(state.currentPlayer).map(state.move)
-      .map(m => (m, search(m, 0))).map(m => (m._1, estimate(m._2, id, d)))
+      .map(m => (m, search(m, 0)))
+      .map(m => (m._1, estimate(m._2, id, d)))
       .reduceLeft((m1, m2) => if (m1._2._2 > m2._2._2) m1 else m2)._1
   }
 
@@ -47,8 +48,10 @@ class ComputerPlayer(d: Int, i: Int) extends Player {
     if (state.isEnd || d == depth) state
     else {
       // recurse over all possible moves of the state, then map the estimate
-      state.moves(state.currentPlayer).map(state.move).map(search(_, d + 1))
-        .map(estimate(_, state.currentPlayer, d)).reduceLeft(best)._1
+      state.moves(state.currentPlayer).map(state.move)
+        .map(search(_, d + 1))
+        .map(estimate(_, state.currentPlayer, d))
+        .reduceLeft(best)._1
     }
   }
 
