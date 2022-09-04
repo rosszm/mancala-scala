@@ -1,11 +1,11 @@
 # Mancala Scala
 
-A command-line based version of the strategy board game, Mancala.
+An implementation of the strategy board game, Mancala.
 This program supports Player vs Player games, as well as Player vs CPU games
-with varying levels difficulty. Move logging is also supported, however, it is disabled within the
-code.
+with varying levels difficulty. Move logging is also supported, however, it is
+disabled within the code.
 
-Created as part of CMPT 470 Winter 2021 Term, exercises 6 through 10.
+Originally created as part of CMPT 470.
 
 ## Usage
 
@@ -16,8 +16,9 @@ Created as part of CMPT 470 Winter 2021 Term, exercises 6 through 10.
 - `<player A>` the first player name or computer difficulty
 - `<player B>` the second player name or computer difficulty
 
-String arguments represent a human player while integer arguments represent a computer player.
-The integer argument for computer players must be between 0 (easiest) and 9 (hardest) inclusive.
+String arguments represent a human player while integer arguments represent a
+computer player. The integer argument for computer players must be between 0 
+(easiest) and 9 (hardest) inclusive.
 
 ### Options
 
@@ -34,8 +35,8 @@ While the program is running the following actions may be made by the player:
 
 ## Project Contents
 
-`./src/main/scala/Main.scala` --- The main program
+`./src/main/scala/Main.scala` - The main program
 
-`./src/main/scala/game/` --- Directory containing code relating to the game state
+`./src/main/scala/game/` - Directory containing code relating to the game state
 
-`./src/main/scala/player/` --- Directory containing code relating to players
+`./src/main/scala/player/` - Directory containing code relating to players

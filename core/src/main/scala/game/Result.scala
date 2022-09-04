@@ -2,7 +2,7 @@
 // zmr462
 // 11215196
 
-package mancala.game
+package dev.zacharyross.mancala.core.game
 
 
 /**

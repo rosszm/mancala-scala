@@ -2,7 +2,7 @@
 // zmr462
 // 11215196
 
-package mancala.game
+package dev.zacharyross.mancala.core.game
 
 
 /**
@@ -63,26 +63,6 @@ class State(nPots: Int, nPebbles: Int) {
   def score: Vector[Int] = store
 
   /**
-    * Returns a help message that describes how to read the string
-    * representation of the state.
-    *
-    * @return the help message
-    */
-  def help: String = {
-    s"""The mancala board is represented by 2 lines. The first line is the row
-      |for the first player, Player A. The second line is the row for the second 
-      |player, Player B. There are 6 pots labelled 1-6 for each player that have 
-      |numbers representing how many pebbles are in each pot.
-      |    
-      |    store  a6 a5 a4 a3 a2 a1
-      |
-      |        0   4  4  4  4  4  4       <- Player A
-      |            4  4  4  4  4  4   0   <- Player B
-      |
-      |           b6 b5 b4 b3 b2 b1  store""".stripMargin
-  }
-
-  /**
     * Sow a pebble in the given pot. This function is protected because it
     * directly modifies `this`; therefore, it should not be called directly,
     * but on a new `State` within `this`.
@@ -129,7 +109,7 @@ class State(nPots: Int, nPebbles: Int) {
     * @return the valid moves of the player
     */
   def moves(player: Int): Vector[String] = {
-    val letter = player match { 
+    val letter = player match {
       case 0 => 'a' // player A
       case 1 => 'b' // player B
       case _ => Vector[String]() // Not a valid player
@@ -150,8 +130,8 @@ class State(nPots: Int, nPebbles: Int) {
   def move(m: String): State = {
     require(moves(currentPlayer).contains(m)) // player must have moves to move
     var pot = m(0) match {
-      case 'a' => (0, m(1).toString.toInt - 1) 
-      case 'b' => (1, m(1).toString.toInt - 1) 
+      case 'a' => (0, m(1).toString.toInt - 1)
+      case 'b' => (1, m(1).toString.toInt - 1)
     }
     val state = new State(this)
     val pebbles = state.take(pot)
@@ -238,7 +218,7 @@ class State(nPots: Int, nPebbles: Int) {
       if ( p > 9) p1.append(s"$p ") else p1.append(s"$p  ")
     })
     
-    val p2 = new StringBuilder().append(" "+" " * (1+(store(0)/10)))
+    val p2 = new StringBuilder().append(" "+" " * (store(0).toString().length()))
     pots(1).foreach(p => {
       if ( p > 9) p2.append(s" $p") else p2.append(s"  $p")
     })
@@ -248,7 +228,6 @@ class State(nPots: Int, nPebbles: Int) {
   }
 
 }
-
 
 /**
   * The State object allows for simple construction of new State Instances

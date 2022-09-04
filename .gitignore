@@ -48,7 +48,7 @@ project/build.properties
 /qbin
 
 # sbt's target directories
-/target/
+target/
 /project/**/target/
 /test/macro-annot/target/
 /test/files/target/
@@ -57,6 +57,7 @@ project/build.properties
 local.sbt
 jitwatch.out
 /.bsp
+*/target/
 
 # Used by the restarr/restarrFull commands as target directories
 /build-restarr/

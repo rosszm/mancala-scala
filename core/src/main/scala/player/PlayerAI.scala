@@ -2,42 +2,24 @@
 // zmr462
 // 11215196
 
-package mancala.player
-import mancala.game.State
+package dev.zacharyross.mancala.core.player
+
+import dev.zacharyross.mancala.core.game.State
 
 
 /**
   * The ComputerPlayer class represents a player controlled by a computer.
   */
-class ComputerPlayer(d: Int, i: Int) extends Player {
-  /** The name of the player */
-  def name: String = "Computer"
-  /** The id of the player */
-  def id: Int = i
-  
-  /**
-      * The search depth of the CPU player
-      *
-      * @return the depth
-      */
-  def depth = d
-
-  /**
-    * Perform a move chosen by the player and returns the new state resulting
-    * from the move.
-    *
-    * @param state the origin state
-    * @return the new state
-    */
-  def move(state: State): State = {
+class PlayerAI(val depth: Int, index: Int) extends Player("AI", index) {
+  override def move(state: State): State = {
     state.moves(state.currentPlayer).map(state.move)
       .map(m => (m, search(m, 0)))
-      .map(m => (m._1, estimate(m._2, id, d)))
+      .map(m => (m._1, estimate(m._2, index, depth)))
       .reduceLeft((m1, m2) => if (m1._2._2 > m2._2._2) m1 else m2)._1
   }
 
   /**
-    * Search the moves of a given state for the best resulting state up to a 
+    * Search the moves of a given state for the best resulting state up to a
     * given depth.
     *
     * @param state the start state
@@ -80,10 +62,10 @@ class ComputerPlayer(d: Int, i: Int) extends Player {
   protected def estimate(state: State, p: Int, d: Int): (State, Int) = {
     if (state.isEnd) {  // if game is over
       val est = state.results.get.winner match {
-        case Some(winner) => { 
-          if (p == winner) 
+        case Some(winner) => {
+          if (p == winner)
             Int.MaxValue - d // a win gives the highest possible weight
-          else 
+          else
             Int.MinValue + depth - d // a loss gives the lowest possible weight
         }
         case None => 0 // draw gives a value of 0

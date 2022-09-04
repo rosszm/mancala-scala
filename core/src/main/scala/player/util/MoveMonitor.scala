@@ -2,9 +2,10 @@
 // zmr462
 // 11215196
 
-package mancala.player.util
-import mancala.game.State
-import mancala.player.Player
+package dev.zacharyross.mancala.core.player.util
+
+import dev.zacharyross.mancala.core.game.State
+import dev.zacharyross.mancala.core.player.Player
 
 
 /**

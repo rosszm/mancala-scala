@@ -2,8 +2,9 @@
 // zmr462
 // 11215196
 
-package mancala.player.util
-import mancala.game.State
+package dev.zacharyross.mancala.core.player.util
+
+import dev.zacharyross.mancala.core.game.State
 import java.io.{File, FileWriter, BufferedWriter}
 import java.time.LocalDateTime
 
